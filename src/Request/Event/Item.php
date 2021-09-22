@@ -66,7 +66,7 @@ class Item implements JsonSerializable
 
     /**
      * The index/position of the item in a list.
-     * @var int|null
+     * @var float|null
      */
     public ?float $index = null;
 

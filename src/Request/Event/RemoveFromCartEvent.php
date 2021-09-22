@@ -12,7 +12,7 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class RemoveFromCartEvent
+class RemoveFromCartEvent implements EventInterface
 {
     /**
      * Currency of the items associated with the event, in 3-letter ISO 4217 format.

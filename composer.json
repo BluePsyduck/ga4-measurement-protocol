@@ -1,6 +1,6 @@
 {
   "name": "bluepsyduck/ga4-measurement-protocol",
-  "description": "A client implementing the Measurement Protocol for Google Analytics 4.",
+  "description": "A small client implementing the Measurement Protocol for Google Analytics 4.",
   "homepage": "https://github.com/BluePsyduck/ga4-measurement-protocol",
   "type": "library",
   "keywords": ["Google Analytics", "Measurement Protocol", "ga4"],

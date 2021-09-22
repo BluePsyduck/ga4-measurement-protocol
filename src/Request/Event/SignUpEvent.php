@@ -13,7 +13,7 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class SignUpEvent
+class SignUpEvent implements EventInterface
 {
     /**
      * The method used for sign up.

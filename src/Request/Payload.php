@@ -59,7 +59,7 @@ class Payload implements JsonSerializable
             'client_id' => $this->clientId,
             'user_ud' => $this->userId,
             'timestamp_micros' => $this->timestampMicros,
-            'user_properties' => $this->userProperties,
+            'user_properties' => (object) $this->userProperties,
             'non_personalized_ads' => $this->nonPersonalizedAds,
             'events' => array_map(fn(EventInterface $event): array => [
                 'name' => $event->getName(),

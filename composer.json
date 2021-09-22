@@ -14,10 +14,12 @@
   "require": {
     "php": "^8.0",
     "ext-json": "*",
-    "guzzlehttp/guzzle": "^7.0"
+    "psr/http-client": "^1.0",
+    "psr/http-factory": "^1.0"
   },
   "require-dev": {
     "bluepsyduck/test-helper": "^1.0",
+    "guzzlehttp/guzzle": "^7.0",
     "phpstan/phpstan": "^0.12",
     "phpstan/phpstan-phpunit": "^0.12",
     "phpstan/phpstan-strict-rules": "^0.12",

@@ -23,7 +23,7 @@
     "phpstan/phpstan": "^0.12",
     "phpstan/phpstan-phpunit": "^0.12",
     "phpstan/phpstan-strict-rules": "^0.12",
-    "phpunit/phpunit": "^8.0",
+    "phpunit/phpunit": "^9.0",
     "rregeer/phpunit-coverage-check": "^0.3",
     "squizlabs/php_codesniffer": "^3.3"
   },
@@ -43,10 +43,8 @@
     "phpcs": "phpcs -p --colors",
     "phpstan": "phpstan analyse --no-interaction --ansi",
     "test-unit": "phpunit --testsuite unit-test --colors=always --coverage-html=test/coverage --coverage-clover=test/coverage/clover.xml",
-    "test-serialize": "phpunit --testsuite serializer-test --colors=always",
     "test": [
       "@test-unit",
-      "@test-serialize",
       "@coverage-check",
       "@phpcs",
       "@phpstan"

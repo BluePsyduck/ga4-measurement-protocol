@@ -71,11 +71,11 @@ class ItemTest extends TestCase
 
         $this->assertSame($expectedData, $item->jsonSerialize());
     }
-    
+
     public function testWithoutData(): void
     {
         $item = new Item();
-        
+
         $this->assertSame([], $item->jsonSerialize());
     }
 }

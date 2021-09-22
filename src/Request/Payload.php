@@ -19,9 +19,9 @@ class Payload implements JsonSerializable
 {
     /**
      * Required. Uniquely identifies a user instance of a web client.
-     * @var string
+     * @var string|null
      */
-    public string $clientId = '';
+    public ?string $clientId = null;
 
     /**
      * Optional. A unique identifier for a user.
@@ -57,13 +57,13 @@ class Payload implements JsonSerializable
     {
         return array_filter([
             'client_id' => $this->clientId,
-            'user_ud' => $this->userId,
+            'user_id' => $this->userId,
             'timestamp_micros' => $this->timestampMicros,
             'user_properties' => (object) $this->userProperties,
             'non_personalized_ads' => $this->nonPersonalizedAds,
             'events' => array_map(fn(EventInterface $event): array => [
                 'name' => $event->getName(),
-                'params' => $event->getParams(),
+                'params' => (object) $event->getParams(),
             ], $this->events),
         ], fn($v) => !is_null($v));
     }

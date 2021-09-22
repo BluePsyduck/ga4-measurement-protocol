@@ -63,8 +63,8 @@ class Client
         ]);
 
         return $this->requestFactory->createRequest('POST', $requestUrl)
-            ->withHeader('Content-Type', 'application/json')
-            ->withBody($this->streamFactory->createStream((string) json_encode($payload)));
+                                    ->withHeader('Content-Type', 'application/json')
+                                    ->withBody($this->streamFactory->createStream((string) json_encode($payload)));
     }
 
     /**

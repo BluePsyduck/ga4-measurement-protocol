@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace BluePsyduck\Ga4MeasurementProtocol;
 
+use BluePsyduck\Ga4MeasurementProtocol\Exception\InvalidJsonResponseException;
 use BluePsyduck\Ga4MeasurementProtocol\Request\Payload;
 use BluePsyduck\Ga4MeasurementProtocol\Response\ValidateResponse;
 use BluePsyduck\Ga4MeasurementProtocol\Response\ValidationMessage;
+use JsonException;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -39,7 +41,11 @@ class Client implements ClientInterface
         $request = $this->createRequest($this->config->validateUrl, $payload);
         $clientResponse = $this->httpClient->sendRequest($request);
 
-        $responseData = json_decode($clientResponse->getBody()->getContents(), true);
+        try {
+            $responseData = json_decode($clientResponse->getBody()->getContents(), true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new InvalidJsonResponseException($e->getMessage(), $e);
+        }
         return $this->createValidationResponse($responseData);
     }
 

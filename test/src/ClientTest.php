@@ -12,6 +12,7 @@ use BluePsyduck\Ga4MeasurementProtocol\Request\Event\LoginEvent;
 use BluePsyduck\Ga4MeasurementProtocol\Request\Payload;
 use BluePsyduck\Ga4MeasurementProtocol\Response\ValidateResponse;
 use BluePsyduck\Ga4MeasurementProtocol\Response\ValidationMessage;
+use BluePsyduck\Ga4MeasurementProtocol\Serializer\SerializerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -37,6 +38,8 @@ class ClientTest extends TestCase
     private RequestFactoryInterface $requestFactory;
     /** @var StreamFactoryInterface&MockObject */
     private StreamFactoryInterface $streamFactory;
+    /** @var SerializerInterface&MockObject */
+    private SerializerInterface $serializer;
     private Config $config;
 
     protected function setUp(): void
@@ -44,6 +47,7 @@ class ClientTest extends TestCase
         $this->httpClient = $this->createMock(ClientInterface::class);
         $this->requestFactory = $this->createMock(RequestFactoryInterface::class);
         $this->streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $this->serializer = $this->createMock(SerializerInterface::class);
         $this->config = new Config();
     }
 
@@ -60,6 +64,7 @@ class ClientTest extends TestCase
                         $this->httpClient,
                         $this->requestFactory,
                         $this->streamFactory,
+                        $this->serializer,
                         $this->config,
                     ])
                     ->getMock();
@@ -73,25 +78,9 @@ class ClientTest extends TestCase
         $this->config->apiSecret = 'abc';
         $this->config->measurementId = 'def';
 
-        $event = new LoginEvent();
-        $event->method = 'Google';
-        $payload = new Payload();
-        $payload->clientId = 'client_id';
-        $payload->events = [$event];
-
+        $payload = $this->createMock(Payload::class);
         $expectedRequestUrl = 'https://www.google-analytics.com/mp/collect?api_secret=abc&measurement_id=def';
-        $expectedPayload = (string) json_encode([
-            'client_id' => 'client_id',
-            'user_properties' => (object) [],
-            'events' => [
-                [
-                    'name' => 'login',
-                    'params' => [
-                        'method' => 'Google',
-                    ],
-                ],
-            ],
-        ]);
+        $serializedPayload = 'jkl';
 
         $stream = $this->createMock(StreamInterface::class);
 
@@ -110,9 +99,14 @@ class ClientTest extends TestCase
                              ->with($this->identicalTo('POST'), $this->identicalTo($expectedRequestUrl))
                              ->willReturn($request);
 
+        $this->serializer->expects($this->once())
+                         ->method('serialize')
+                         ->with($this->identicalTo($payload))
+                         ->willReturn($serializedPayload);
+
         $this->streamFactory->expects($this->once())
                             ->method('createStream')
-                            ->with($this->identicalTo($expectedPayload))
+                            ->with($this->identicalTo($serializedPayload))
                             ->willReturn($stream);
 
         $this->httpClient->expects($this->once())
@@ -131,10 +125,9 @@ class ClientTest extends TestCase
         $this->config->apiSecret = 'abc';
         $this->config->measurementId = 'def';
 
-        $event = new LoginEvent();
-        $event->method = 'Google';
-        $payload = new Payload();
-        $payload->events = [$event];
+        $payload = $this->createMock(Payload::class);
+        $expectedRequestUrl = 'https://www.google-analytics.com/debug/mp/collect?api_secret=abc&measurement_id=def';
+        $serializedPayload = 'ghi';
 
         $exampleResponse = <<<EOT
         {
@@ -156,18 +149,7 @@ class ClientTest extends TestCase
                        ->method('getBody')
                        ->willReturn($clientResponseBody);
 
-        $expectedRequestUrl = 'https://www.google-analytics.com/debug/mp/collect?api_secret=abc&measurement_id=def';
-        $expectedPayload = (string) json_encode([
-            'user_properties' => (object) [],
-            'events' => [
-                [
-                    'name' => 'login',
-                    'params' => [
-                        'method' => 'Google',
-                    ],
-                ],
-            ],
-        ]);
+
         $expectedValidationMessage = new ValidationMessage();
         $expectedValidationMessage->fieldPath = 'client_id';
         $expectedValidationMessage->description = 'Measurement requires a client_id.';
@@ -192,9 +174,14 @@ class ClientTest extends TestCase
                              ->with($this->identicalTo('POST'), $this->identicalTo($expectedRequestUrl))
                              ->willReturn($request);
 
+        $this->serializer->expects($this->once())
+                         ->method('serialize')
+                         ->with($this->identicalTo($payload))
+                         ->willReturn($serializedPayload);
+
         $this->streamFactory->expects($this->once())
                             ->method('createStream')
-                            ->with($this->identicalTo($expectedPayload))
+                            ->with($this->identicalTo($serializedPayload))
                             ->willReturn($stream);
 
         $this->httpClient->expects($this->once())
@@ -216,10 +203,9 @@ class ClientTest extends TestCase
         $this->config->apiSecret = 'abc';
         $this->config->measurementId = 'def';
 
-        $event = new LoginEvent();
-        $event->method = 'Google';
-        $payload = new Payload();
-        $payload->events = [$event];
+        $payload = $this->createMock(Payload::class);
+        $expectedRequestUrl = 'https://www.google-analytics.com/debug/mp/collect?api_secret=abc&measurement_id=def';
+        $serializedPayload = 'ghi';
 
         $clientResponseBody = $this->createMock(StreamInterface::class);
         $clientResponseBody->expects($this->once())
@@ -230,18 +216,6 @@ class ClientTest extends TestCase
                        ->method('getBody')
                        ->willReturn($clientResponseBody);
 
-        $expectedRequestUrl = 'https://www.google-analytics.com/debug/mp/collect?api_secret=abc&measurement_id=def';
-        $expectedPayload = (string) json_encode([
-            'user_properties' => (object) [],
-            'events' => [
-                [
-                    'name' => 'login',
-                    'params' => [
-                        'method' => 'Google',
-                    ],
-                ],
-            ],
-        ]);
         $expectedValidationMessage = new ValidationMessage();
         $expectedValidationMessage->fieldPath = 'client_id';
         $expectedValidationMessage->description = 'Measurement requires a client_id.';
@@ -266,9 +240,14 @@ class ClientTest extends TestCase
                              ->with($this->identicalTo('POST'), $this->identicalTo($expectedRequestUrl))
                              ->willReturn($request);
 
+        $this->serializer->expects($this->once())
+                         ->method('serialize')
+                         ->with($this->identicalTo($payload))
+                         ->willReturn($serializedPayload);
+
         $this->streamFactory->expects($this->once())
                             ->method('createStream')
-                            ->with($this->identicalTo($expectedPayload))
+                            ->with($this->identicalTo($serializedPayload))
                             ->willReturn($stream);
 
         $this->httpClient->expects($this->once())

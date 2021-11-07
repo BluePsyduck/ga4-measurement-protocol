@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
 
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Event;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Parameter;
+
 /**
  * Use this event to contextualize search operations. This event can help you identify the most popular content in your
  * app.
@@ -13,23 +16,13 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Event('search')]
 class SearchEvent implements EventInterface
 {
     /**
      * The term that was searched for.
      * @var string|null
      */
+    #[Parameter('search_term')]
     public ?string $searchTerm = null;
-
-    public function getName(): string
-    {
-        return 'search';
-    }
-
-    public function getParams(): array
-    {
-        return array_filter([
-            'search_term' => $this->searchTerm,
-        ], fn($v) => !is_null($v));
-    }
 }

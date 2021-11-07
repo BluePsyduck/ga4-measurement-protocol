@@ -34,7 +34,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "BluePsyduckTest\\Ga4MeasurementProtocol\\": "test/src/"
+      "BluePsyduckTest\\Ga4MeasurementProtocol\\": "test/src/",
+      "BluePsyduckTestSerializer\\Ga4MeasurementProtocol\\": "test/serializer/"
     }
   },
   "scripts": {
@@ -42,9 +43,11 @@
     "phpcbf": "phpcbf -p --colors",
     "phpcs": "phpcs -p --colors",
     "phpstan": "phpstan analyse --no-interaction --ansi",
+    "test-serialize": "phpunit --testsuite serializer-test --colors=always",
     "test-unit": "phpunit --testsuite unit-test --colors=always --coverage-html=test/coverage --coverage-clover=test/coverage/clover.xml",
     "test": [
       "@test-unit",
+      "@test-serialize",
       "@coverage-check",
       "@phpcs",
       "@phpstan"

@@ -34,6 +34,7 @@ The following example shows how to use the `guzzlehttp/guzzle` package with the 
 
 use BluePsyduck\Ga4MeasurementProtocol\Config;
 use BluePsyduck\Ga4MeasurementProtocol\Client;
+use BluePsyduck\Ga4MeasurementProtocol\Serializer\Serializer;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -41,6 +42,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 // Create the required dependencies
 $guzzleClient = new GuzzleClient();
 $httpFactory = new HttpFactory();
+$serializer = new Serializer();
 
 // Create the additional config required by the client
 $config = new Config();
@@ -52,6 +54,7 @@ $client = new Client(
     $guzzleClient, // Implementation of the PSR-18 ClientInterface 
     $httpFactory,  // Implementation of the PSR-17 RequestFactoryInterface
     $httpFactory,  // Implementation of the PSR-17 StreamFactoryInterface
+    $serializer,   // Shipped with the library
     $config,
 );
 
@@ -111,37 +114,26 @@ reference docs to get additional information about which attributes may actually
 
 ## Custom events
 
-To create your own events, simply implement the `EventInterface` and its methods, and add instances of this class to 
-the payload the same as any other event.
+To create your own events, simply implement the `EventInterface` and add the `Event` attribute to the class specifying
+the name of the event, as well as the `Parameter` attribute to each property which should get send to Google Analytics.
 
 ```php
 <?php
 
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Event;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Parameter;
 use BluePsyduck\Ga4MeasurementProtocol\Request\Event\EventInterface;
 
+#[Event('fancy_event')] // Expects the name of the event to be used in the payload to Google Analytics. 
 class FancyEvent implements EventInterface
 {
     /**
      * A fancy value for the fancy event.
      * @var string|null 
      */
+    #[Parameter('fancy_value')] // Expects the name of the parameter to be used in the payload. Please pay attention
+                                // to the limitations of parameter names, such as their maximum length.
     public ?string $fancyValue = null;
-
-    public function getName(): string
-    {
-        // Return the name of the event as it should appear in the payload and thus in Google Analytics.
-        return 'fancy_event';
-    }
-    
-    public function getParams(): array
-    {
-        // Return the parameters for your event as associative array.
-        // Please pay attention to the limitations of events (parameter name length, value length etc.).
-        // Make sure to filter optional (and not set) parameters.
-        return array_filter([
-            'fancy_value' => $this->fancyValue,
-        ], fn($v) => !is_null($v));
-    }
 }
 
 // Create your custom event
@@ -152,9 +144,11 @@ $fancyEvent->fancyValue = 'fancy';
 $payload->events[] = $fancyEvent;
 ```
 
+All parameters which should appear in the payload must be marked with the `Parameter` or `ParameterArray` attributes.
+It is recommended to make the default value of all parameters `null`, as those will get filtered out and do not appear
+in the payload.
+
 ## Further reading
 
 * [Measurement Protocol (Google Analytics 4)](https://developers.google.com/analytics/devguides/collection/protocol/ga4)
 * [Reference: Events](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events)
-
-

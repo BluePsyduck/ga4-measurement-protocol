@@ -65,18 +65,20 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param array<string, mixed> $responseData
+     * @param mixed $responseData
      * @return ValidateResponse
      */
-    private function createValidationResponse(array $responseData): ValidateResponse
+    private function createValidationResponse(mixed $responseData): ValidateResponse
     {
         $response = new ValidateResponse();
-        foreach ($responseData['validationMessages'] ?? [] as $messageData) {
-            $message = new ValidationMessage();
-            $message->fieldPath = $messageData['fieldPath'] ?? '';
-            $message->description = $messageData['description'] ?? '';
-            $message->validationCode = $messageData['validationCode'] ?? '';
-            $response->validationMessages[] = $message;
+        if (is_array($responseData)) {
+            foreach ($responseData['validationMessages'] ?? [] as $messageData) {
+                $message = new ValidationMessage();
+                $message->fieldPath = $messageData['fieldPath'] ?? '';
+                $message->description = $messageData['description'] ?? '';
+                $message->validationCode = $messageData['validationCode'] ?? '';
+                $response->validationMessages[] = $message;
+            }
         }
         return $response;
     }

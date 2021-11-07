@@ -85,9 +85,10 @@ class Serializer implements SerializerInterface
                 if ($attribute instanceof Parameter) {
                     $parameters[$attribute->name] = $this->transform($reflectedProperty->getValue($object));
                 } elseif ($attribute instanceof ParameterArray) {
+                    $value = $reflectedProperty->getValue($object);
                     $parameters[$attribute->name] = array_map(
                         [$this, 'transform'],
-                        $reflectedProperty->getValue($object) ?? [],
+                        is_array($value) ? $value : [],
                     );
                 }
             }

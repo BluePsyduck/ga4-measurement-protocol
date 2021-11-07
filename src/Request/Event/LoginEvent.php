@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
 
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Event;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Parameter;
+
 /**
  * Send this event to signify that a user has logged in.
  *
@@ -12,23 +15,13 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Event('login')]
 class LoginEvent implements EventInterface
 {
     /**
      * The method used to login.
      * @var string|null
      */
+    #[Parameter('method')]
     public ?string $method = null;
-
-    public function getName(): string
-    {
-        return 'login';
-    }
-
-    public function getParams(): array
-    {
-        return array_filter([
-            'method' => $this->method,
-        ], fn($v) => !is_null($v));
-    }
 }

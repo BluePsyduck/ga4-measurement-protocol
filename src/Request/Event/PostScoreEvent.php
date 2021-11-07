@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
 
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Event;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Parameter;
+
 /**
  * Send this event when the user posts a score. Use this event to understand how users are performing in your game and
  * correlate high scores with audiences or behaviors.
@@ -13,37 +16,27 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Event('post_score')]
 class PostScoreEvent implements EventInterface
 {
     /**
      * The score to post.
      * @var float|null
      */
+    #[Parameter('score')]
     public ?float $score = null;
 
     /**
      * The level for the score.
      * @var float|null
      */
+    #[Parameter('level')]
     public ?float $level = null;
 
     /**
      * The character that achieved the score.
      * @var string|null
      */
+    #[Parameter('character')]
     public ?string $character = null;
-
-    public function getName(): string
-    {
-        return 'post_score';
-    }
-
-    public function getParams(): array
-    {
-        return array_filter([
-            'score' => $this->score,
-            'level' => $this->level,
-            'character' => $this->character,
-        ], fn($v) => !is_null($v));
-    }
 }

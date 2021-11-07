@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
 
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Event;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Parameter;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\ParameterArray;
+
 /**
  * Log this event when the users has been presented with the results of a search.
  *
@@ -12,30 +16,20 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Event('view_search_results')]
 class ViewSearchResultsEvent implements EventInterface
 {
     /**
      * The term that was searched for.
      * @var string|null
      */
+    #[Parameter('search_term')]
     public ?string $searchTerm = null;
 
     /**
      * The items for the event.
      * @var array<Item>
      */
+    #[ParameterArray('items')]
     public array $items = [];
-
-    public function getName(): string
-    {
-        return 'view_search_results';
-    }
-
-    public function getParams(): array
-    {
-        return array_filter([
-            'search_term' => $this->searchTerm,
-            'items' => $this->items,
-        ], fn($v) => !is_null($v));
-    }
 }

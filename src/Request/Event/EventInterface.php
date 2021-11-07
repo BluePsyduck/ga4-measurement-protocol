@@ -12,15 +12,4 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  */
 interface EventInterface
 {
-    /**
-     * The name of the event.
-     * @return string
-     */
-    public function getName(): string;
-
-    /**
-     * The parameters for the event.
-     * @return array<string, mixed>
-     */
-    public function getParams(): array;
 }

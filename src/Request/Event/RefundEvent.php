@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
 
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Event;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\Parameter;
+use BluePsyduck\Ga4MeasurementProtocol\Attribute\ParameterArray;
+
 /**
  * This event signifies a refund was issued.
  *
@@ -12,72 +16,62 @@ namespace BluePsyduck\Ga4MeasurementProtocol\Request\Event;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Event('refund')]
 class RefundEvent implements EventInterface
 {
     /**
      * Currency of the items associated with the event, in 3-letter ISO 4217 format.
      * @var string|null
      */
+    #[Parameter('currency')]
     public ?string $currency = null;
 
     /**
      * The unique identifier of a transaction.
      * @var string|null
      */
+    #[Parameter('transaction_id')]
     public ?string $transactionId = null;
 
     /**
      * The monetary value of the event.
      * @var float|null
      */
+    #[Parameter('value')]
     public ?float $value = null;
 
     /**
      * A product affiliation to designate a supplying company or brick and mortar store location.
      * @var string|null
      */
+    #[Parameter('affiliation')]
     public ?string $affiliation = null;
 
     /**
      * The coupon name/code associated with the event.
      * @var string|null
      */
+    #[Parameter('coupon')]
     public ?string $coupon = null;
 
     /**
      * Shipping cost associated with a transaction.
      * @var float|null
      */
+    #[Parameter('shipping')]
     public ?float $shipping = null;
 
     /**
      * Tax cost associated with a transaction.
      * @var float|null
      */
+    #[Parameter('tax')]
     public ?float $tax = null;
 
     /**
      * The items for the event.
      * @var array<Item>
      */
+    #[ParameterArray('items')]
     public array $items = [];
-
-    public function getName(): string
-    {
-        return 'refund';
-    }
-
-    public function getParams(): array
-    {
-        return array_filter([
-            'currency' => $this->currency,
-            'transaction_id' => $this->transactionId,
-            'value' => $this->value,
-            'affiliation' => $this->affiliation,
-            'coupon' => $this->coupon,
-            'shipping' => $this->shipping,
-            'tax' => $this->tax,
-            'items' => $this->items,
-        ], fn($v) => !is_null($v));
-    }
 }

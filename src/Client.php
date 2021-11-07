@@ -8,6 +8,7 @@ use BluePsyduck\Ga4MeasurementProtocol\Exception\InvalidJsonResponseException;
 use BluePsyduck\Ga4MeasurementProtocol\Request\Payload;
 use BluePsyduck\Ga4MeasurementProtocol\Response\ValidateResponse;
 use BluePsyduck\Ga4MeasurementProtocol\Response\ValidationMessage;
+use BluePsyduck\Ga4MeasurementProtocol\Serializer\SerializerInterface;
 use JsonException;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -26,6 +27,7 @@ class Client implements ClientInterface
         private HttpClientInterface $httpClient,
         private RequestFactoryInterface $requestFactory,
         private StreamFactoryInterface $streamFactory,
+        private SerializerInterface $serializer,
         private Config $config,
     ) {
     }
@@ -55,25 +57,28 @@ class Client implements ClientInterface
             'api_secret' => $this->config->apiSecret,
             'measurement_id' => $this->config->measurementId,
         ]);
+        $body = $this->streamFactory->createStream($this->serializer->serialize($payload));
 
         return $this->requestFactory->createRequest('POST', $requestUrl)
                                     ->withHeader('Content-Type', 'application/json')
-                                    ->withBody($this->streamFactory->createStream((string) json_encode($payload)));
+                                    ->withBody($body);
     }
 
     /**
-     * @param array<string, mixed> $responseData
+     * @param mixed $responseData
      * @return ValidateResponse
      */
-    private function createValidationResponse(array $responseData): ValidateResponse
+    private function createValidationResponse(mixed $responseData): ValidateResponse
     {
         $response = new ValidateResponse();
-        foreach ($responseData['validationMessages'] ?? [] as $messageData) {
-            $message = new ValidationMessage();
-            $message->fieldPath = $messageData['fieldPath'] ?? '';
-            $message->description = $messageData['description'] ?? '';
-            $message->validationCode = $messageData['validationCode'] ?? '';
-            $response->validationMessages[] = $message;
+        if (is_array($responseData)) {
+            foreach ($responseData['validationMessages'] ?? [] as $messageData) {
+                $message = new ValidationMessage();
+                $message->fieldPath = $messageData['fieldPath'] ?? '';
+                $message->description = $messageData['description'] ?? '';
+                $message->validationCode = $messageData['validationCode'] ?? '';
+                $response->validationMessages[] = $message;
+            }
         }
         return $response;
     }
